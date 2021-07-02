@@ -18,7 +18,7 @@ jobs:
       # Label used to access the service container
       postgres:
         # Docker Hub image
-        image: postgis/{{ matrix.postgis }}
+        image: postgis/postgis:{{ matrix.postgis }}
         # Provide the password for postgres
         env:
           POSTGRES_PASSWORD: main
