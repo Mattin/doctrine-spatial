@@ -10,6 +10,8 @@ jobs:
     strategy:
       matrix:
         php: [ '7.4', '8.0' ]
+        #The oldest and the newest PostGreSQL server and all available postgis extension
+        postgis: [ '13-3.1-alpine', '13-3.0-alpine', '9.5-2.5-alpine', '9.5-3.0-alpine', '9.6-3.1-alpine' ]
     name: PHP${{ matrix.php }}/PostGreSQL
     # Service containers to run with `container-job`
     services:
@@ -29,7 +31,7 @@ jobs:
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
-          --health-retries 5
+          --health-retries 10
     steps:
       - uses: actions/checkout@master
       - name: Validate composer.json
