@@ -25,7 +25,7 @@ use LongitudeOne\Spatial\ORM\Query\AST\Functions\AbstractSpatialDQLFunction;
  * @author  Matus Nickel <matus.nickel@gmail.com>
  * @license https://dlambert.mit-license.org MIT
  */
-class SpDistanceSphere extends AbstractSpatialDQLFunction
+class StDistanceSphere extends AbstractSpatialDQLFunction
 {
     /**
      * Function SQL name getter.
