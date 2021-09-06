@@ -30,6 +30,7 @@ abstract class AbstractSpatialType extends Type
 {
     public const PLATFORM_MYSQL = 'MySql';
     public const PLATFORM_POSTGRESQL = 'PostgreSql';
+    public const PLATFORM_MSSQL = 'MsSql';
 
     // phpcs:disable Generic.NamingConventions.CamelCapsFunctionName.ScopeNotCamelCaps
 
