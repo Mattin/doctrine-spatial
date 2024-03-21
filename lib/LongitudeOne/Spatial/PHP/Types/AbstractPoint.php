@@ -2,11 +2,11 @@
 /**
  * This file is part of the doctrine spatial extension.
  *
- * PHP 7.4 | 8.0
+ * PHP 8.1
  *
- * (c) Alexandre Tranchant <alexandre.tranchant@gmail.com> 2017 - 2021
- * (c) Longitude One 2020 - 2021
- * (c) 2015 Derek J. Lambert
+ * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2017-2024
+ * Copyright Longitude One 2020-2024
+ * Copyright 2015 Derek J. Lambert
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -32,14 +32,14 @@ use LongitudeOne\Spatial\Exception\InvalidValueException;
 abstract class AbstractPoint extends AbstractGeometry
 {
     /**
-     * The longitude.
+     * The X coordinate or the longitude.
      *
      * @var float
      */
     protected $x;
 
     /**
-     * The Latitude.
+     * The Y coordinate or the latitude.
      *
      * @var float
      */
@@ -112,9 +112,9 @@ abstract class AbstractPoint extends AbstractGeometry
      *
      * @param mixed $latitude the new latitude of point
      *
-     * @throws InvalidValueException when latitude is not valid
-     *
      * @return self
+     *
+     * @throws InvalidValueException when latitude is not valid
      */
     public function setLatitude($latitude)
     {
@@ -126,9 +126,9 @@ abstract class AbstractPoint extends AbstractGeometry
      *
      * @param mixed $longitude the new longitude
      *
-     * @throws InvalidValueException when longitude is not valid
-     *
      * @return self
+     *
+     * @throws InvalidValueException when longitude is not valid
      */
     public function setLongitude($longitude)
     {
@@ -140,9 +140,9 @@ abstract class AbstractPoint extends AbstractGeometry
      *
      * @param mixed $x the new X
      *
-     * @throws InvalidValueException when x is not valid
-     *
      * @return self
+     *
+     * @throws InvalidValueException when x is not valid
      */
     public function setX($x)
     {
@@ -150,7 +150,7 @@ abstract class AbstractPoint extends AbstractGeometry
 
         try {
             $this->x = (float) $parser->parse();
-        } catch (RangeException | UnexpectedValueException $e) {
+        } catch (RangeException|UnexpectedValueException $e) {
             throw new InvalidValueException($e->getMessage(), $e->getCode(), $e->getPrevious());
         }
 
@@ -162,9 +162,9 @@ abstract class AbstractPoint extends AbstractGeometry
      *
      * @param mixed $y the new Y value
      *
-     * @throws InvalidValueException when Y is invalid, not in valid range
-     *
      * @return self
+     *
+     * @throws InvalidValueException when Y is invalid, not in valid range
      */
     public function setY($y)
     {
@@ -172,7 +172,7 @@ abstract class AbstractPoint extends AbstractGeometry
 
         try {
             $this->y = (float) $parser->parse();
-        } catch (RangeException | UnexpectedValueException $e) {
+        } catch (RangeException|UnexpectedValueException $e) {
             throw new InvalidValueException($e->getMessage(), $e->getCode(), $e->getPrevious());
         }
 
@@ -193,8 +193,8 @@ abstract class AbstractPoint extends AbstractGeometry
     /**
      * Abstract point constructor.
      *
-     * @param int      $x    X, latitude
-     * @param int      $y    Y, longitude
+     * @param int      $x    X, longitude
+     * @param int      $y    Y, latitude
      * @param int|null $srid Spatial Reference System Identifier
      *
      * @throws InvalidValueException if x or y are invalid
@@ -212,11 +212,11 @@ abstract class AbstractPoint extends AbstractGeometry
      *
      * @param ?array $argv list of arguments
      *
-     * @throws InvalidValueException when an argument is not valid
-     *
      * @return array
+     *
+     * @throws InvalidValueException when an argument is not valid
      */
-    protected function validateArguments(array $argv = null)
+    protected function validateArguments(?array $argv = null)
     {
         $argc = count($argv);
 

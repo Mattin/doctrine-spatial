@@ -2,11 +2,11 @@
 /**
  * This file is part of the doctrine spatial extension.
  *
- * PHP 7.4 | 8.0
+ * PHP 8.1
  *
- * (c) Alexandre Tranchant <alexandre.tranchant@gmail.com> 2017 - 2021
- * (c) Longitude One 2020 - 2021
- * (c) 2015 Derek J. Lambert
+ * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2017-2024
+ * Copyright Longitude One 2020-2024
+ * Copyright 2015 Derek J. Lambert
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -59,9 +59,9 @@ class GeometryWalker extends SqlWalker
      *
      * @param SelectExpression $selectExpression Select expression AST node
      *
-     * @throws QueryException when error happend during walking into select expression
-     *
      * @return string the SQL
+     *
+     * @throws QueryException when error happend during walking into select expression
      */
     public function walkSelectExpression($selectExpression)
     {

@@ -2,11 +2,11 @@
 /**
  * This file is part of the doctrine spatial extension.
  *
- * PHP 7.4 | 8.0
+ * PHP 8.1
  *
- * (c) Alexandre Tranchant <alexandre.tranchant@gmail.com> 2017 - 2021
- * (c) Longitude One 2020 - 2021
- * (c) 2015 Derek J. Lambert
+ * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2017-2024
+ * Copyright Longitude One 2020-2024
+ * Copyright 2015 Derek J. Lambert
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -15,8 +15,8 @@
 
 namespace LongitudeOne\Spatial\Tests\ORM\Query\AST\Functions\PostgreSql;
 
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\Mapping\MappingException;
 use LongitudeOne\Spatial\Exception\InvalidValueException;
 use LongitudeOne\Spatial\PHP\Types\Geography\LineString as GeographyLineString;
@@ -40,6 +40,7 @@ use LongitudeOne\Spatial\Tests\OrmTestCase;
  * @group pgsql-only
  *
  * @internal
+ *
  * @coversDefaultClass
  */
 class SpSummaryTest extends OrmTestCase
@@ -99,11 +100,11 @@ class SpSummaryTest extends OrmTestCase
 
         static::assertCount(3, $result);
         static::assertEquals($point, $result[0][0]);
-        static::assertMatchesRegularExpression('/^Point\[.*G.*\]/', $result[0][1]);
+        static::assertMatchesRegularExpression('/^Point\[.*G.*]/', $result[0][1]);
         static::assertEquals($linestring, $result[1][0]);
-        static::assertMatchesRegularExpression('/^LineString\[.*G.*\]/', $result[1][1]);
+        static::assertMatchesRegularExpression('/^LineString\[.*G.*]/', $result[1][1]);
         static::assertEquals($polygon, $result[2][0]);
-        static::assertMatchesRegularExpression('/^Polygon\[.*G.*\]/', $result[2][1]);
+        static::assertMatchesRegularExpression('/^Polygon\[.*G.*]/', $result[2][1]);
     }
 
     /**
@@ -149,10 +150,10 @@ class SpSummaryTest extends OrmTestCase
 
         static::assertCount(3, $result);
         static::assertEquals($point, $result[0][0]);
-        static::assertMatchesRegularExpression('/^Point\[[^G]*\]/', $result[0][1]);
+        static::assertMatchesRegularExpression('/^Point\[[^G]*]/', $result[0][1]);
         static::assertEquals($linestring, $result[1][0]);
-        static::assertMatchesRegularExpression('/^LineString\[[^G]*\]/', $result[1][1]);
+        static::assertMatchesRegularExpression('/^LineString\[[^G]*]/', $result[1][1]);
         static::assertEquals($polygon, $result[2][0]);
-        static::assertMatchesRegularExpression('/^Polygon\[[^G]*\]/', $result[2][1]);
+        static::assertMatchesRegularExpression('/^Polygon\[[^G]*]/', $result[2][1]);
     }
 }

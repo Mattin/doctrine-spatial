@@ -2,11 +2,11 @@
 /**
  * This file is part of the doctrine spatial extension.
  *
- * PHP 7.4 | 8.0
+ * PHP 8.1
  *
- * (c) Alexandre Tranchant <alexandre.tranchant@gmail.com> 2017 - 2021
- * (c) Longitude One 2020 - 2021
- * (c) 2015 Derek J. Lambert
+ * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2017-2024
+ * Copyright Longitude One 2020-2024
+ * Copyright 2015 Derek J. Lambert
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -19,10 +19,12 @@ use Cache\Adapter\PHPArray\ArrayCachePool;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -47,18 +49,18 @@ abstract class OrmMockTestCase extends TestCase
     /**
      * Return the mocked connection.
      *
-     * @throws Exception when connection is not successful
-     *
      * @return Connection
+     *
+     * @throws Exception when connection is not successful
      */
     protected function getMockConnection()
     {
         /** @var Driver|MockObject $driver */
-        $driver = $this->getMockBuilder('Doctrine\DBAL\Driver\PDOSqlite\Driver')
+        $driver = $this->getMockBuilder(Driver\PDO\SQLite\Driver::class)
             ->onlyMethods(['getDatabasePlatform'])
             ->getMock()
         ;
-        $platform = $this->getMockBuilder('Doctrine\DBAL\Platforms\SqlitePlatform')
+        $platform = $this->getMockBuilder(SqlitePlatform::class)
             ->onlyMethods(['getName'])
             ->getMock()
         ;
@@ -76,10 +78,10 @@ abstract class OrmMockTestCase extends TestCase
     /**
      * Get the mocked entity manager.
      *
+     * @return EntityManagerInterface a mocked entity manager
+     *
      * @throws Exception    When connection is not successful
      * @throws ORMException won't happen because Metadata cache is set
-     *
-     * @return EntityManagerInterface a mocked entity manager
      */
     protected function getMockEntityManager()
     {
@@ -93,8 +95,7 @@ abstract class OrmMockTestCase extends TestCase
         $config->setMetadataCache(new ArrayCachePool());
         $config->setProxyDir(__DIR__.'/Proxies');
         $config->setProxyNamespace('LongitudeOne\Spatial\Tests\Proxies');
-        //TODO Warning wrong paramater is provided
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver($path, true));
+        $config->setMetadataDriverImpl(new AttributeDriver($path));
 
         return EntityManager::create($this->getMockConnection(), $config);
     }

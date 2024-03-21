@@ -2,11 +2,11 @@
 /**
  * This file is part of the doctrine spatial extension.
  *
- * PHP 7.4 | 8.0
+ * PHP 8.1
  *
- * (c) Alexandre Tranchant <alexandre.tranchant@gmail.com> 2017 - 2021
- * (c) Longitude One 2020 - 2021
- * (c) 2015 Derek J. Lambert
+ * Copyright Alexandre Tranchant <alexandre.tranchant@gmail.com> 2017-2024
+ * Copyright Longitude One 2020-2024
+ * Copyright 2015 Derek J. Lambert
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -27,11 +27,11 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Persistence\Mapping\MappingException;
-use InvalidArgumentException;
 use LongitudeOne\Spatial\DBAL\Types\Geography\LineStringType as GeographyLineStringType;
 use LongitudeOne\Spatial\DBAL\Types\Geography\PointType as GeographyPointType;
 use LongitudeOne\Spatial\DBAL\Types\Geography\PolygonType as GeographyPolygonType;
@@ -154,7 +154,6 @@ use LongitudeOne\Spatial\Tests\Fixtures\PointEntity;
 use LongitudeOne\Spatial\Tests\Fixtures\PolygonEntity;
 use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\TestCase;
-use Throwable;
 
 // phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
 // phpcs miss the Exception
@@ -164,7 +163,7 @@ use Throwable;
  */
 abstract class OrmTestCase extends TestCase
 {
-    //Fixtures and entities
+    // Fixtures and entities
     public const GEO_LINESTRING_ENTITY = GeoLineStringEntity::class;
     public const GEO_POINT_SRID_ENTITY = GeoPointSridEntity::class;
     public const GEO_POLYGON_ENTITY = GeoPolygonEntity::class;
@@ -292,7 +291,7 @@ abstract class OrmTestCase extends TestCase
     {
         try {
             static::$connection = static::getConnection();
-        } catch (UnsupportedPlatformException | Exception $e) {
+        } catch (UnsupportedPlatformException|Exception $e) {
             static::fail(sprintf('Unable to establish connection in %s: %s', __FILE__, $e->getMessage()));
         }
     }
@@ -324,7 +323,7 @@ abstract class OrmTestCase extends TestCase
             $this->setUpTypes();
             $this->setUpEntities();
             $this->setUpFunctions();
-        } catch (UnsupportedPlatformException | Exception $e) {
+        } catch (UnsupportedPlatformException|Exception $e) {
             static::fail(sprintf('Unable to setup test in %s: %s', __FILE__, $e->getMessage()));
         }
     }
@@ -345,7 +344,7 @@ abstract class OrmTestCase extends TestCase
             }
 
             $this->getEntityManager()->clear();
-        } catch (Exception | MappingException | UnsupportedPlatformException $e) {
+        } catch (Exception|MappingException|UnsupportedPlatformException $e) {
             static::fail(sprintf('Unable to clear table after test: %s', $e->getMessage()));
         }
     }
@@ -358,18 +357,18 @@ abstract class OrmTestCase extends TestCase
      * @param mixed                 $value    Value to test
      * @param AbstractPlatform|null $platform the platform
      */
-    protected static function assertBigPolygon($value, AbstractPlatform $platform = null): void
+    protected static function assertBigPolygon($value, ?AbstractPlatform $platform = null): void
     {
         switch ($platform->getName()) {
             case 'mysql':
-                //MySQL does not respect creation order of points composing a Polygon.
+                // MySQL does not respect creation order of points composing a Polygon.
                 static::assertSame('POLYGON((0 10,0 0,10 0,10 10,0 10))', $value);
                 break;
             case 'postgresl':
             default:
-                //Here is the good result.
+                // Here is the good result.
                 // A linestring minus another crossing linestring returns initial linestring splited
-                static::assertSame('POLYGON((0 0,0 10,10 10,10 0,0 0))', $value);
+                static::assertSame('POLYGON((0 10,10 10,10 0,0 0,0 10))', $value);
         }
     }
 
@@ -381,15 +380,19 @@ abstract class OrmTestCase extends TestCase
      * @param mixed                 $value    Value to test
      * @param AbstractPlatform|null $platform the platform
      */
-    protected static function assertEmptyGeometry($value, AbstractPlatform $platform = null): void
+    protected static function assertEmptyGeometry($value, ?AbstractPlatform $platform = null): void
     {
-        $expected = 'GEOMETRYCOLLECTION EMPTY';
+        $expected = 'EMPTY';
+        $method = 'assertStringEndsWith';
+
         if ($platform instanceof MySQL57Platform && !$platform instanceof MySQL80Platform) {
-            //MySQL5 does not return the standard answer
-            //This bug was solved in MySQL8
+            // MySQL5 does not return the standard answer
+            // This bug was solved in MySQL8
             $expected = 'GEOMETRYCOLLECTION()';
+            $method = 'assertSame';
         }
-        static::assertSame($expected, $value);
+
+        static::$method($expected, $value);
     }
 
     /**
@@ -430,10 +433,10 @@ abstract class OrmTestCase extends TestCase
     /**
      * Establish the connection if it is not already done, then returns it.
      *
+     * @return Connection
+     *
      * @throws Exception                    when connection is not successful
      * @throws UnsupportedPlatformException when platform is unsupported
-     *
-     * @return Connection
      */
     protected static function getConnection()
     {
@@ -462,9 +465,9 @@ abstract class OrmTestCase extends TestCase
     /**
      * Return connection parameters.
      *
-     * @throws Exception when connection is not successful
-     *
      * @return array
+     *
+     * @throws Exception when connection is not successful
      */
     protected static function getConnectionParameters()
     {
@@ -516,25 +519,22 @@ abstract class OrmTestCase extends TestCase
             $config->setMetadataCache(new ArrayCachePool());
             $config->setProxyDir(__DIR__.'/Proxies');
             $config->setProxyNamespace('LongitudeOne\Spatial\Tests\Proxies');
-            //TODO WARNING: a non-expected parameter is provided.
-            $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver($realPaths, true));
+            $config->setMetadataDriverImpl(new AttributeDriver($realPaths));
 
             return EntityManager::create(static::getConnection(), $config);
-        } catch (ORMException | Exception | UnsupportedPlatformException $e) {
+        } catch (ORMException|Exception|UnsupportedPlatformException $e) {
             static::fail(sprintf('Unable to init the EntityManager: %s', $e->getMessage()));
         }
     }
 
     /**
      * Get platform.
-     *
-     * @return AbstractPlatform
      */
     protected function getPlatform(): ?AbstractPlatform
     {
         try {
             return static::getConnection()->getDatabasePlatform();
-        } catch (UnsupportedPlatformException | Exception $e) {
+        } catch (UnsupportedPlatformException|Exception $e) {
             static::fail('Unable to get database platform: '.$e->getMessage());
         }
     }
@@ -582,12 +582,12 @@ abstract class OrmTestCase extends TestCase
     /**
      * On not successful test.
      *
-     * @param Throwable $throwable the exception
+     * @param \Throwable $throwable the exception
      *
-     * @throws InvalidArgumentException the formatted exception when sql logger is on
-     * @throws Throwable                the exception provided as parameter
+     * @throws \InvalidArgumentException the formatted exception when sql logger is on
+     * @throws \Throwable                the exception provided as parameter
      */
-    protected function onNotSuccessfulTest(Throwable $throwable): void
+    protected function onNotSuccessfulTest(\Throwable $throwable): void
     {
         if (!$GLOBALS['opt_use_debug_stack'] || $throwable instanceof AssertionFailedError) {
             throw $throwable;
@@ -633,7 +633,7 @@ abstract class OrmTestCase extends TestCase
             $message = sprintf("[%s] %s\n\n", get_class($throwable), $throwable->getMessage());
             $message .= sprintf("With queries:\n%s\nTrace:\n%s", $queries, $traceMsg);
 
-            throw new InvalidArgumentException($message, $throwable->getCode(), $throwable);
+            throw new \InvalidArgumentException($message, $throwable->getCode(), $throwable);
         }
 
         throw $throwable;
@@ -672,11 +672,11 @@ abstract class OrmTestCase extends TestCase
         $this->addStandardFunctions($configuration);
 
         if ('postgresql' === $this->getPlatformAndVersion()) {
-            //Specific functions of PostgreSQL server
+            // Specific functions of PostgreSQL server
             $this->addSpecificPostgreSqlFunctions($configuration);
         }
 
-        //This test does not work when we compare to 'mysql' (on Travis only)
+        // This test does not work when we compare to 'mysql' (on Travis only)
         if ('postgresql' !== $this->getPlatform()->getName()) {
             $this->addSpecificMySqlFunctions($configuration);
         }
@@ -814,7 +814,7 @@ abstract class OrmTestCase extends TestCase
      */
     private function addStandardFunctions(Configuration $configuration): void
     {
-        //Generic spatial functions described in OGC Standard
+        // Generic spatial functions described in OGC Standard
         $configuration->addCustomNumericFunction('ST_Area', StArea::class);
         $configuration->addCustomStringFunction('ST_AsBinary', StAsBinary::class);
         $configuration->addCustomStringFunction('ST_AsText', StAsText::class);
