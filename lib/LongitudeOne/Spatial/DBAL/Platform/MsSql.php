@@ -35,9 +35,13 @@ class MsSql extends AbstractPlatform
      *
      * @return string
      */
-    public function convertToDatabaseValueSql(AbstractSpatialType $type, $sqlExpr)
+    public function convertToDatabaseValue(AbstractSpatialType $type, SpatialInterface $value): string
     {
-        return sprintf('ST_GeomFromText(%s)', $sqlExpr);
+        if (!$type->supportsPlatform($this)) {
+            throw new UnsupportedTypeException(sprintf('Platform %s is not currently supported.', $this::class));
+        }
+
+        return sprintf('ST_GeomFromText(%s)', $value);
     }
 
     /**
@@ -60,12 +64,14 @@ class MsSql extends AbstractPlatform
      *
      * @return string
      */
-    public function getSqlDeclaration(array $fieldDeclaration)
+    public function getSqlDeclaration(array $column, ?AbstractSpatialType $type = null, ?int $srid = null): string
     {
-        if (GeographyInterface::GEOGRAPHY === $fieldDeclaration['type']->getSQLType()) {
+        $type = parent::checkType($column, $type);
+
+        if (SpatialInterface::GEOGRAPHY === $type->getSQLType()) {
             return 'GEOMETRY';
         }
 
-        return mb_strtoupper($fieldDeclaration['type']->getSQLType());
+        return mb_strtoupper($type->getSQLType());
     }
 }
