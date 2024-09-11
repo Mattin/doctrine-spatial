@@ -17,6 +17,9 @@ namespace LongitudeOne\Spatial\DBAL\Platform;
 
 use LongitudeOne\Spatial\DBAL\Types\AbstractSpatialType;
 use LongitudeOne\Spatial\PHP\Types\Geography\GeographyInterface;
+use LongitudeOne\Spatial\Exception\MissingArgumentException;
+use LongitudeOne\Spatial\Exception\UnsupportedTypeException;
+use LongitudeOne\Spatial\PHP\Types\SpatialInterface;
 
 /**
  * MySql5.7 and less spatial platform.
