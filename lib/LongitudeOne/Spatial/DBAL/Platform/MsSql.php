@@ -45,6 +45,17 @@ class MsSql extends AbstractPlatform
     }
 
     /**
+     * Convert to database value.
+     *
+     * @param AbstractSpatialType $type    The spatial type
+     * @param string              $sqlExpr The SQL expression
+     */
+    public function convertToDatabaseValueSql(AbstractSpatialType $type, $sqlExpr): string
+    {
+        return sprintf('ST_GeomFromText(%s)', $sqlExpr);
+    }
+
+    /**
      * Convert to php value to SQL.
      *
      * @param AbstractSpatialType $type    The spatial type
