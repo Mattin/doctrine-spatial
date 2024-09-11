@@ -20,7 +20,7 @@ namespace LongitudeOne\Spatial\DBAL\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
-use Doctrine\DBAL\Platforms\MsSQLPlatform;
+use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Types\Exception\TypeNotRegistered;
 use Doctrine\DBAL\Types\Type;
@@ -252,7 +252,7 @@ abstract class AbstractSpatialType extends Type implements DoctrineSpatialTypeIn
             return new PostgreSql();
         }
 
-        if ($platform instanceof MsSQLPlatform) {
+        if ($platform instanceof SQLServerPlatform) {
             return new MsSql();
         }
 
