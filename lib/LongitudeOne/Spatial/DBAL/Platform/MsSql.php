@@ -52,7 +52,7 @@ class MsSql extends AbstractPlatform
      *
      * @return string
      */
-    public function convertToPhpValueSql(AbstractSpatialType $type, $sqlExpr)
+    public function convertToPhpValueSql(AbstractSpatialType $type, $sqlExpr): string
     {
         return sprintf('ST_AsBinary(%s)', $sqlExpr);
     }
