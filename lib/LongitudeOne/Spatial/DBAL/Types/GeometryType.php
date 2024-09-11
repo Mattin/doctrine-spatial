@@ -19,6 +19,7 @@ declare(strict_types=1);
 namespace LongitudeOne\Spatial\DBAL\Types;
 
 use LongitudeOne\Spatial\DBAL\Platform\MySql;
+use LongitudeOne\Spatial\DBAL\Platform\MsSql;
 use LongitudeOne\Spatial\DBAL\Platform\PlatformInterface;
 use LongitudeOne\Spatial\DBAL\Platform\PostgreSql;
 
@@ -40,6 +41,7 @@ class GeometryType extends AbstractSpatialType
         return [
             MySql::class,
             PostgreSql::class,
+            MsSql::class
         ];
     }
 }
